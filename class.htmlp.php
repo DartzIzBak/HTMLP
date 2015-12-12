@@ -319,7 +319,7 @@ class HTMLP
     public function nextElement($file, &$index, $parent)
     {
 
-        $string = new \String;
+        $string = new \StringHelpers;
         $string->set($file);
 
         $elements_name = '';

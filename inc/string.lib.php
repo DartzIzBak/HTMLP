@@ -1,6 +1,6 @@
 <?php
 
-class String {
+class StringHelpers {
     private $value = '';
 
     public function set( $string ) {
