@@ -234,7 +234,11 @@ class HTMLP
                             break;
 
                         case "=":
-                            $is_custom_key = false;
+                            if($is_custom_key) {
+                                $is_custom_key = false;
+                            } else {
+                                $custom_value .= $attr[$index];
+                            }
                             break;
 
                         default:
@@ -257,15 +261,17 @@ class HTMLP
                         $attrs[$key][] = $string;
                         $string = '';
                     }
+                    $string = '';
                     $key = 'class';
                 } elseif ($attr[$index] == '#') {
                     if ($key != '') {
                         if (!array_key_exists($key, $attrs)) {
                             $attrs[$key] = array();
                         }
+
                         $attrs[$key][] = $string;
-                        $string = '';
                     }
+                    $string = '';
                     $key = 'id';
                 } elseif ($attr[$index] == ' ') {
                     if ($key != '') {
@@ -374,6 +380,10 @@ class HTMLP
                 $is_alt_script = true;
                 break;
 
+            case 'pre':
+                $is_alt_script = true;
+                break;
+
             case 'import':
                 $is_inclusion = true;
                 $thisElement = new EmptyHE($this);
@@ -414,8 +424,12 @@ class HTMLP
                         if ($is_inclusion) {
 
                             $htmlp = new \htmlp\HTMLP();
-                            $htmlp->process($elements_text . '.template');
-                            $thisElement->append_content($htmlp->get_render(), true);
+                            if(file_exists($elements_text . '.template')) {
+                                $htmlp->process($elements_text . '.template');
+                                $thisElement->append_content($htmlp->get_render(), true);
+                            } else {
+                                $thisElement->append_content('File does not exist: '.$elements_text . '.template', true);
+                            }
 
                         } else {
                             $thisElement->append_content($elements_text, true);
@@ -494,12 +508,18 @@ class HTMLP
                 $rules = CSSParser::Parse($elements_text, false);
                 $emailprocessor->addRules($rules);
             } else {
-                $line = str_replace("\t", "", $elements_text);
-                $script = substr($line, 1 + (($line[1] == ' ') ? 1 : 0), strlen($line));
+                if($elements_true_name != 'pre') {
+                    $line = str_replace("\t", "", $elements_text);
+                    $script = substr($line, 1 + (($line[1] == ' ') ? 1 : 0), strlen($line));
 
-                $thisElement->append_content($script);
+                    $thisElement->append_content($script);
 
-                $parent->add_child_element($thisElement);
+                    $parent->add_child_element($thisElement);
+                } else {
+                    $script = $elements_text;
+                    $thisElement->append_content($script);
+                    $parent->add_child_element($thisElement);
+                }
             }
         } else {
 

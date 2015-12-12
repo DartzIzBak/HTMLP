@@ -232,7 +232,7 @@ class BaseElement extends Element {
                 $this->last_paragraph = new EmptyHE($this->htmlp);
                 $this->add_child_element( $this->last_paragraph );
             }
-            $this->last_paragraph->append_content( str_replace( array( "\n", "\r" ), "", $content ) );
+            $this->last_paragraph->append_content( $content );
         } else {
             $this->content .= $content;
         }
